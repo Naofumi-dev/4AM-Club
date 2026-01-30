@@ -962,6 +962,76 @@
     <script>
         // Backend API URL
         const API_URL = 'https://4am-club-backend.vercel.app';
+        const WS_URL = API_URL.replace('https://', 'wss://').replace('http://', 'ws://');
+        
+        // WebSocket connection
+        let ws = null;
+        let wsReconnectAttempts = 0;
+        const MAX_RECONNECT_ATTEMPTS = 5;
+        
+        function connectWebSocket() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                return; // Already connected
+            }
+            
+            try {
+                ws = new WebSocket(WS_URL);
+                
+                ws.onopen = () => {
+                    console.log('✅ WebSocket connected');
+                    wsReconnectAttempts = 0;
+                    showAlert('Real-time sync active!', 'success');
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleWebSocketMessage(data);
+                    } catch (error) {
+                        console.error('WebSocket message parse error:', error);
+                    }
+                };
+                
+                ws.onclose = () => {
+                    console.log('WebSocket disconnected');
+                    ws = null;
+                    
+                    // Attempt to reconnect
+                    if (wsReconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                        wsReconnectAttempts++;
+                        const delay = Math.min(1000 * Math.pow(2, wsReconnectAttempts), 30000);
+                        console.log(`Reconnecting in ${delay / 1000}s...`);
+                        setTimeout(connectWebSocket, delay);
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                };
+            } catch (error) {
+                console.error('WebSocket connection error:', error);
+            }
+        }
+        
+        function handleWebSocketMessage(data) {
+            console.log('📨 Received update:', data);
+            
+            if (data.type === 'notion_update' || data.type === 'notion_changes') {
+                // Sync the changes to clients
+                if (data.data && data.data.length > 0) {
+                    syncNotionToClients(data.data);
+                    saveState();
+                    renderClients();
+                    renderStats();
+                    
+                    // Update last sync time
+                    appState.lastSyncTime = new Date().toISOString();
+                    updateNotionUI();
+                    
+                    showAlert(`${data.changes} new updates from Notion!`, 'success');
+                }
+            }
+        }
         
         // Brutal truths
         const truths = [
@@ -1036,6 +1106,11 @@
             updateNotionUI();
             setupEventListeners();
             startAutoSync(); // Start auto-sync
+            
+            // Connect WebSocket if Notion is already connected
+            if (appState.notionConnected) {
+                connectWebSocket();
+            }
         }
         
         function renderQuote() {
@@ -1378,6 +1453,8 @@
             // Remove any dashes or spaces from database ID
             const cleanDatabaseId = databaseId.replace(/[-\s]/g, '');
             
+            showAlert('Connecting to Notion...', 'success');
+            
             try {
                 const response = await fetch(`${API_URL}/api/notion/database/${cleanDatabaseId}`, {
                     method: 'GET',
@@ -1394,17 +1471,33 @@
                     data = { error: 'Invalid response from server' };
                 }
                 
-                if (response.ok) {
+                if (response.ok && data.success) {
                     appState.notionConnected = true;
                     appState.notionApiKey = apiKey;
                     appState.notionDatabaseId = cleanDatabaseId;
                     saveState();
                     updateNotionUI();
-                    showAlert('Successfully connected!', 'success');
+                    showAlert(`Connected to "${data.database.title}"!`, 'success');
+                    
+                    // Start WebSocket connection for real-time updates
+                    connectWebSocket();
+                    
+                    // Do initial sync
                     await fetchNotionData();
                 } else {
                     console.error('Connection failed:', data);
-                    showAlert(`Failed: ${data.error || data.message || 'Invalid credentials'}`, 'danger');
+                    const errorMsg = data.error || data.message || 'Connection failed';
+                    
+                    // Provide helpful error messages
+                    if (errorMsg.includes('page') && errorMsg.includes('database')) {
+                        showAlert('Error: This is a page ID, not a database ID. Please use the database ID instead.', 'danger');
+                    } else if (errorMsg.includes('object_not_found')) {
+                        showAlert('Error: Database not found. Make sure you shared the database with your integration.', 'danger');
+                    } else if (errorMsg.includes('unauthorized')) {
+                        showAlert('Error: Invalid API key or insufficient permissions.', 'danger');
+                    } else {
+                        showAlert(`Failed: ${errorMsg}`, 'danger');
+                    }
                 }
             } catch (error) {
                 console.error('Connection error:', error);
@@ -1422,12 +1515,14 @@
                         'Content-Type': 'application/json',
                         'x-notion-api-key': appState.notionApiKey
                     },
-                    body: JSON.stringify({ databaseId: appState.notionDatabaseId })
+                    body: JSON.stringify({ 
+                        databaseId: appState.notionDatabaseId
+                    })
                 });
                 
                 const data = await response.json();
                 
-                if (response.ok) {
+                if (response.ok && data.success) {
                     // Update stats
                     appState.notionData.jobApps = data.total_count || data.results.length;
                     appState.notionData.outreach = data.total_count || data.results.length;
@@ -1440,7 +1535,11 @@
                     updateNotionUI();
                     renderClients();
                     renderStats();
-                    showAlert(`Synced ${data.results.length} items successfully!`, 'success');
+                    
+                    const changesMsg = data.changes_count > 0 
+                        ? `${data.changes_count} new changes detected!` 
+                        : 'No new changes';
+                    showAlert(`Synced ${data.results.length} items successfully! ${changesMsg}`, 'success');
                 } else {
                     showAlert(`Sync failed: ${data.error || 'Unknown error'}`, 'danger');
                 }
