@@ -5,22 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Daily Momentum">
-    <meta name="description" content="Your personal accountability system for building consistent habits, landing premium clients, and becoming the 1% better version of yourself every single day.">
-    <title>Daily Momentum - Your 30-Day Transformation Tracker</title>
+    <meta name="apple-mobile-web-app-title" content="4AM Club">
+    <title>4AM Club - Solo Dad System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        :root {
+            --primary: #ff6b35;
+            --primary-dark: #e85d2e;
+            --secondary: #f7931e;
+            --success: #10b981;
+            --warning: #fbbf24;
+            --danger: #dc2626;
+            --dark: #0a0a0a;
+            --dark-2: #1a1a1a;
+            --dark-3: #2a2a2a;
+            --text: #ffffff;
+            --text-dim: #888888;
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-            background: #000;
-            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark);
+            color: var(--text);
             overflow-x: hidden;
             padding-bottom: 80px;
         }
@@ -28,63 +37,141 @@
         .header {
             position: sticky;
             top: 0;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(10, 10, 10, 0.98);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 20px 20px 15px;
+            padding: 16px 20px;
             z-index: 100;
-            border-bottom: 1px solid #222;
+            border-bottom: 1px solid var(--dark-3);
         }
         
-        .date-display {
-            font-size: 13px;
-            color: #888;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
         }
         
-        h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #fff 0%, #999 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
-        .subtitle {
-            font-size: 15px;
-            color: #666;
-            margin-bottom: 20px;
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 900;
+            color: white;
+        }
+        
+        .logo-text h1 {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--text);
+        }
+        
+        .logo-text p {
+            font-size: 10px;
+            color: var(--text-dim);
+            letter-spacing: 1.5px;
+            font-weight: 600;
         }
         
         .tabs {
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            padding: 0;
             scrollbar-width: none;
         }
         
-        .tabs::-webkit-scrollbar {
-            display: none;
-        }
+        .tabs::-webkit-scrollbar { display: none; }
         
         .tab {
-            padding: 8px 16px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 20px;
+            padding: 10px 18px;
+            background: var(--dark-2);
+            border: 1px solid var(--dark-3);
+            border-radius: 10px;
             font-size: 14px;
             white-space: nowrap;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            font-weight: 600;
+            color: var(--text-dim);
         }
         
         .tab.active {
-            background: #fff;
-            color: #000;
-            border-color: #fff;
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .quote-card {
+            background: linear-gradient(135deg, var(--primary), #e85d2e);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 20px;
+        }
+        
+        .quote-text {
+            font-size: 17px;
+            line-height: 1.5;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: white;
+        }
+        
+        .refresh-quote {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 0 20px 20px;
+        }
+        
+        .stat-card {
+            background: var(--dark-2);
+            border: 1px solid var(--dark-3);
+            border-radius: 14px;
+            padding: 18px;
+            position: relative;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-dim);
         }
         
         .content {
@@ -99,241 +186,158 @@
             display: block;
         }
         
-        .daily-card {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 16px;
-            padding: 20px;
+        .task-card {
+            background: var(--dark-2);
+            border: 1px solid var(--dark-3);
+            border-radius: 14px;
+            padding: 16px;
             margin-bottom: 12px;
-            transition: all 0.3s;
-        }
-        
-        .daily-card:active {
-            transform: scale(0.98);
-            opacity: 0.9;
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #2a2a2a;
-        }
-        
-        .day-name {
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        .day-date {
-            font-size: 13px;
-            color: #666;
-        }
-        
-        .progress-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 3px solid #2a2a2a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
-            position: relative;
-        }
-        
-        .progress-circle.complete {
-            border-color: #4ade80;
-            color: #4ade80;
-        }
-        
-        .task-group {
-            margin-bottom: 16px;
-        }
-        
-        .task-group:last-child {
-            margin-bottom: 0;
-        }
-        
-        .task-group-title {
-            font-size: 11px;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        
-        .task-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px;
-            background: #0a0a0a;
-            border-radius: 10px;
-            margin-bottom: 8px;
             cursor: pointer;
-            transition: all 0.2s;
         }
         
-        .task-item:active {
-            background: #151515;
-        }
-        
-        .task-item.completed {
+        .task-card.completed {
             opacity: 0.5;
         }
         
+        .task-header {
+            display: flex;
+            gap: 12px;
+        }
+        
         .checkbox {
-            min-width: 22px;
-            height: 22px;
-            border: 2px solid #444;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 2px;
-            transition: all 0.2s;
-        }
-        
-        .task-item.completed .checkbox {
-            background: #4ade80;
-            border-color: #4ade80;
-        }
-        
-        .checkbox::after {
-            content: '✓';
-            color: #000;
-            font-size: 12px;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .task-item.completed .checkbox::after {
-            opacity: 1;
-        }
-        
-        .task-content {
-            flex: 1;
-        }
-        
-        .task-time {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-        
-        .task-text {
-            font-size: 15px;
-            line-height: 1.4;
-            color: #fff;
-        }
-        
-        .task-item.completed .task-text {
-            text-decoration: line-through;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 16px;
-            padding: 20px;
-        }
-        
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        
-        .stat-label {
-            font-size: 13px;
-            color: #666;
-        }
-        
-        .streak-counter {
-            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .streak-number {
-            font-size: 48px;
-            font-weight: 800;
-            color: #000;
-            margin-bottom: 8px;
-        }
-        
-        .streak-label {
-            font-size: 14px;
-            color: #000;
-            opacity: 0.8;
-            font-weight: 600;
-        }
-        
-        .habit-checklist {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .habit-checklist h3 {
-            font-size: 16px;
-            margin-bottom: 16px;
-            color: #fff;
-        }
-        
-        .habit-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: #0a0a0a;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            cursor: pointer;
-        }
-        
-        .habit-checkbox {
-            width: 24px;
+            min-width: 24px;
             height: 24px;
-            border: 2px solid #444;
+            border: 2px solid var(--dark-3);
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        .habit-item.checked .habit-checkbox {
-            background: #4ade80;
-            border-color: #4ade80;
+        .task-card.completed .checkbox {
+            background: var(--success);
+            border-color: var(--success);
         }
         
-        .habit-checkbox::after {
+        .checkbox::after {
             content: '✓';
-            color: #000;
+            color: white;
             font-weight: bold;
             opacity: 0;
         }
         
-        .habit-item.checked .habit-checkbox::after {
+        .task-card.completed .checkbox::after {
             opacity: 1;
+        }
+        
+        .task-info {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        
+        .task-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 600;
+        }
+        
+        .form-input {
+            width: 100%;
+            background: var(--dark);
+            border: 1px solid var(--dark-3);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-size: 15px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .notion-card {
+            background: var(--dark-2);
+            border: 1px solid var(--dark-3);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .notion-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: var(--dark);
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--danger);
+        }
+        
+        .status-dot.connected {
+            background: var(--success);
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        
+        .alert-danger {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
         }
         
         .bottom-nav {
@@ -341,12 +345,10 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(10, 10, 10, 0.98);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid #222;
-            padding: 12px 20px;
-            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            border-top: 1px solid var(--dark-3);
+            padding: 8px 20px;
             display: flex;
             justify-content: space-around;
             z-index: 100;
@@ -358,609 +360,551 @@
             align-items: center;
             gap: 4px;
             cursor: pointer;
-            transition: all 0.2s;
-            padding: 8px 16px;
-            border-radius: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
         }
         
         .nav-item.active {
-            background: #1a1a1a;
+            background: var(--dark-2);
         }
         
-        .nav-icon {
-            font-size: 24px;
+        .nav-item i {
+            font-size: 20px;
+            color: var(--text-dim);
         }
         
-        .nav-icon i {
-            display: block;
-        }
-        
-        .fas, .fa {
-            margin-right: 8px;
-        }
-        
-        .habit-item .fas,
-        .habit-item .fa {
-            width: 20px;
-            text-align: center;
-            color: #4ade80;
+        .nav-item.active i {
+            color: var(--primary);
         }
         
         .nav-label {
             font-size: 11px;
-            color: #666;
+            color: var(--text-dim);
+            font-weight: 600;
         }
         
-        .nav-item.active .nav-label {
-            color: #fff;
-        }
-        
-        .goals-list {
-            margin-top: 20px;
-        }
-        
-        .goal-card {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 16px;
-            padding: 20px;
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
             margin-bottom: 16px;
         }
         
-        .goal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
         }
         
-        .goal-title {
-            font-size: 16px;
-            font-weight: 600;
+        .empty-icon {
+            font-size: 48px;
+            opacity: 0.2;
+            margin-bottom: 16px;
         }
         
-        .goal-target {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 12px;
-        }
-        
-        .progress-bar-container {
-            background: #0a0a0a;
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
-            transition: width 0.3s;
-            border-radius: 4px;
-        }
-        
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-top: 20px;
-        }
-        
-        .calendar-day {
-            aspect-ratio: 1;
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
+        .client-item {
+            background: var(--dark-2);
+            border: 1px solid var(--dark-3);
             border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .client-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
+            font-size: 20px;
+            font-weight: 900;
+            color: white;
         }
         
-        .calendar-day.today {
-            border-color: #fff;
-            background: #2a2a2a;
+        .client-info {
+            flex: 1;
         }
         
-        .calendar-day.completed {
-            background: #4ade80;
-            border-color: #4ade80;
-        }
-        
-        .calendar-day-num {
-            font-size: 16px;
+        .client-name {
+            font-size: 15px;
             font-weight: 600;
+            margin-bottom: 4px;
         }
         
-        .calendar-day.completed .calendar-day-num {
-            color: #000;
-        }
-        
-        .calendar-day-label {
-            font-size: 9px;
-            color: #666;
-            margin-top: 4px;
-        }
-        
-        @media (max-width: 375px) {
-            h1 {
-                font-size: 28px;
-            }
-            
-            .stat-value {
-                font-size: 28px;
-            }
+        .chart-wrapper {
+            height: 280px;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="date-display" id="currentDate">TODAY</div>
-        <h1>Daily Momentum</h1>
-        <div class="subtitle">30-Day Transformation: Build Habits → Land Clients → Master Automation</div>
+        <div class="header-top">
+            <div class="logo">
+                <div class="logo-icon">4A</div>
+                <div class="logo-text">
+                    <h1>4AM CLUB</h1>
+                    <p>SOLO DAD SYSTEM</p>
+                </div>
+            </div>
+        </div>
         
         <div class="tabs">
-            <div class="tab active" data-view="today">Today</div>
-            <div class="tab" data-view="week">This Week</div>
-            <div class="tab" data-view="month">February</div>
-            <div class="tab" data-view="progress">Progress</div>
+            <div class="tab active" data-view="dashboard">Dashboard</div>
+            <div class="tab" data-view="habits">Habits</div>
+            <div class="tab" data-view="clients">Clients</div>
+            <div class="tab" data-view="weight">Weight</div>
+            <div class="tab" data-view="notion">Notion</div>
+        </div>
+    </div>
+    
+    <div class="quote-card">
+        <div class="quote-text" id="quoteText">Loading...</div>
+        <button class="refresh-quote" id="refreshQuote">New Truth</button>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value" id="streakDays">0</div>
+            <div class="stat-label">Day Streak</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="habitsToday">0/8</div>
+            <div class="stat-label">Today's Habits</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="clientCount">0</div>
+            <div class="stat-label">Active Leads</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="weightDiff">--</div>
+            <div class="stat-label">Weight Change</div>
         </div>
     </div>
     
     <div class="content">
-        <!-- TODAY VIEW -->
-        <div class="view active" id="today">
-            <div class="streak-counter">
-                <div class="streak-number" id="streakDays">1</div>
-                <div class="streak-label">DAY STREAK <i class="fas fa-fire"></i></div>
-            </div>
-            
-            <div class="habit-checklist">
-                <h3>Today's Non-Negotiables</h3>
-                <div class="habit-item" data-habit="meditation">
-                    <div class="habit-checkbox"></div>
-                    <div><i class="fas fa-spa"></i> 4:00am Meditation</div>
-                </div>
-                <div class="habit-item" data-habit="journal-morning">
-                    <div class="habit-checkbox"></div>
-                    <div><i class="fas fa-book-open"></i> Morning Journal (Gratitude)</div>
-                </div>
-                <div class="habit-item" data-habit="automation">
-                    <div class="habit-checkbox"></div>
-                    <div><i class="fas fa-robot"></i> 30min Automation Learning</div>
-                </div>
-                <div class="habit-item" data-habit="gym">
-                    <div class="habit-checkbox"></div>
-                    <div><i class="fas fa-dumbbell"></i> 6am Gym Session</div>
-                </div>
-                <div class="habit-item" data-habit="client-work">
-                    <div class="habit-checkbox"></div>
-                    <div><i class="fas fa-bullseye"></i> Client Work (10am-12pm)</div>
-                </div>
-                <div class="habit-item" data-habit="journal-evening">
-                    <div class="habit-checkbox"></div>
-                    <div><i class="fas fa-pen-fancy"></i> Evening Journal (Wins)</div>
-                </div>
-                <div class="habit-item" data-habit="reading">
-                    <div class="habit-checkbox"></div>
-                    <div><i class="fas fa-book"></i> 30min Reading</div>
-                </div>
-                <div class="habit-item" data-habit="sleep">
-                    <div class="habit-checkbox"></div>
-                    <div><i class="fas fa-moon"></i> Sleep by 11pm</div>
+        <div class="view active" id="dashboard">
+            <div class="section-title">Today's Mission</div>
+            <div id="todayTasks">
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-tasks"></i></div>
+                    <div style="color: var(--text-dim);">Add tasks to start tracking</div>
                 </div>
             </div>
-            
-            <div id="todaySchedule"></div>
         </div>
         
-        <!-- WEEK VIEW -->
-        <div class="view" id="week">
-            <div id="weekSchedule"></div>
+        <div class="view" id="habits">
+            <div class="section-title">Daily Habits</div>
+            <div id="habitsList"></div>
         </div>
         
-        <!-- MONTH VIEW -->
-        <div class="view" id="month">
-            <div class="calendar-grid" id="monthCalendar"></div>
-        </div>
-        
-        <!-- PROGRESS VIEW -->
-        <div class="view" id="progress">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="gymCount">0</div>
-                    <div class="stat-label">Gym Sessions</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="clientCount">0</div>
-                    <div class="stat-label">Clients Reached</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="automationHours">0</div>
-                    <div class="stat-label">Learning Hours</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="readingHours">0</div>
-                    <div class="stat-label">Reading Hours</div>
+        <div class="view" id="clients">
+            <div class="section-title">Client Pipeline</div>
+            <div id="clientsList">
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-users"></i></div>
+                    <div style="color: var(--text-dim);">No clients yet</div>
                 </div>
             </div>
+        </div>
+        
+        <div class="view" id="weight">
+            <div class="section-title">Weight Tracker</div>
+            <div class="notion-card">
+                <div class="form-group">
+                    <label class="form-label">Weight (kg)</label>
+                    <input type="number" class="form-input" id="weightInput" placeholder="75.5" step="0.1">
+                </div>
+                <button class="btn btn-primary" id="addWeightBtn" style="width: 100%;">Add Entry</button>
+            </div>
+            <div class="notion-card">
+                <div class="chart-wrapper">
+                    <canvas id="weightChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="view" id="notion">
+            <div id="notionAlert"></div>
             
-            <div class="goals-list">
-                <div class="goal-card">
-                    <div class="goal-header">
-                        <div class="goal-title"><i class="fas fa-dumbbell"></i> Gym Consistency</div>
-                        <div id="gymProgress">0/28</div>
-                    </div>
-                    <div class="goal-target">Target: Every single day in February</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="gymBar"></div>
+            <div class="notion-card">
+                <div class="section-title">Notion Integration</div>
+                
+                <div class="notion-status">
+                    <div class="status-dot" id="notionStatusDot"></div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; margin-bottom: 4px;" id="notionStatusText">Not Connected</div>
+                        <div style="font-size: 12px; color: var(--text-dim);">Sync job apps & outreach</div>
                     </div>
                 </div>
                 
-                <div class="goal-card">
-                    <div class="goal-header">
-                        <div class="goal-title"><i class="fas fa-bullseye"></i> Premium Clients</div>
-                        <div id="clientProgress">0/2</div>
-                    </div>
-                    <div class="goal-target">Goal: Land 2 direct clients by Feb 28</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="clientBar"></div>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Integration Token</label>
+                    <input type="password" class="form-input" id="notionApiKey" placeholder="secret_...">
                 </div>
                 
-                <div class="goal-card">
-                    <div class="goal-header">
-                        <div class="goal-title"><i class="fas fa-robot"></i> Automation Skills</div>
-                        <div id="automationProgress">0/14</div>
-                    </div>
-                    <div class="goal-target">Target: 14 hours total (30min daily)</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="automationBar"></div>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Database ID</label>
+                    <input type="text" class="form-input" id="notionDatabaseId" placeholder="Database ID">
                 </div>
                 
-                <div class="goal-card">
-                    <div class="goal-header">
-                        <div class="goal-title"><i class="fas fa-pen-fancy"></i> Daily Journaling</div>
-                        <div id="journalProgress">0/56</div>
+                <button class="btn btn-primary" id="connectNotionBtn" style="width: 100%; margin-bottom: 8px;">
+                    <i class="fab fa-notion"></i> <span id="notionBtnText">Connect</span>
+                </button>
+                
+                <button class="btn" id="testNotionBtn" style="width: 100%; background: var(--dark); color: var(--text); display: none;">
+                    Test Connection
+                </button>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px;">
+                    <div style="background: var(--dark); padding: 16px; border-radius: 10px;">
+                        <div style="font-size: 28px; font-weight: 900; color: var(--primary);" id="jobAppsCount">0</div>
+                        <div style="font-size: 12px; color: var(--text-dim);">Job Applications</div>
                     </div>
-                    <div class="goal-target">Target: 2 sessions daily (morning + evening)</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="journalBar"></div>
+                    <div style="background: var(--dark); padding: 16px; border-radius: 10px;">
+                        <div style="font-size: 28px; font-weight: 900; color: var(--primary);" id="outreachCount">0</div>
+                        <div style="font-size: 12px; color: var(--text-dim);">Client Outreach</div>
                     </div>
                 </div>
+            </div>
+            
+            <div class="notion-card">
+                <div class="section-title" style="margin-bottom: 12px;">Setup Guide</div>
+                <ol style="padding-left: 20px; color: var(--text-dim); font-size: 14px; line-height: 1.8;">
+                    <li style="margin-bottom: 8px;">Visit <a href="https://www.notion.so/my-integrations" target="_blank" style="color: var(--primary);">notion.so/my-integrations</a></li>
+                    <li style="margin-bottom: 8px;">Create integration, copy token</li>
+                    <li style="margin-bottom: 8px;">Open database → "..." → Add connections</li>
+                    <li style="margin-bottom: 8px;">Copy database ID from URL</li>
+                    <li>Paste above and connect</li>
+                </ol>
             </div>
         </div>
     </div>
     
     <div class="bottom-nav">
-        <div class="nav-item active" data-nav="today">
-            <div class="nav-icon"><i class="fas fa-calendar-day"></i></div>
-            <div class="nav-label">Today</div>
+        <div class="nav-item active" data-nav="dashboard">
+            <i class="fas fa-home"></i>
+            <div class="nav-label">Home</div>
         </div>
-        <div class="nav-item" data-nav="week">
-            <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
-            <div class="nav-label">Week</div>
+        <div class="nav-item" data-nav="habits">
+            <i class="fas fa-fire"></i>
+            <div class="nav-label">Habits</div>
         </div>
-        <div class="nav-item" data-nav="month">
-            <div class="nav-icon"><i class="fas fa-calendar-alt"></i></div>
-            <div class="nav-label">Month</div>
+        <div class="nav-item" data-nav="clients">
+            <i class="fas fa-briefcase"></i>
+            <div class="nav-label">Clients</div>
         </div>
-        <div class="nav-item" data-nav="progress">
-            <div class="nav-icon"><i class="fas fa-trophy"></i></div>
+        <div class="nav-item" data-nav="weight">
+            <i class="fas fa-chart-line"></i>
             <div class="nav-label">Progress</div>
         </div>
     </div>
     
     <script>
-        // Month-long schedule template
-        const dailyTemplate = [
-            { time: '4:00-4:15am', text: '<i class="fas fa-spa"></i> Meditation', key: 'meditation' },
-            { time: '4:15-4:45am', text: '<i class="fas fa-book-open"></i> Morning Journal - Gratitude', key: 'journal-morning' },
-            { time: '4:45-5:30am', text: '<i class="fas fa-robot"></i> Automation Learning (30min)', key: 'automation' },
-            { time: '5:30-8:00am', text: '<i class="fas fa-car"></i> <i class="fas fa-dumbbell"></i> Gym Session', key: 'gym' },
-            { time: '8:00-9:00am', text: '<i class="fas fa-child"></i> Older son - breakfast', key: 'family' },
-            { time: '9:00-10:00am', text: '<i class="fas fa-users"></i> School prep with wife', key: 'family' },
-            { time: '10:00-12:00pm', text: '<i class="fas fa-graduation-cap"></i> <i class="fas fa-bullseye"></i> CLIENT WORK - Outreach & follow-ups', key: 'client-work' },
-            { time: '12:00-1:00pm', text: '<i class="fas fa-utensils"></i> Lunch with son', key: 'family' },
-            { time: '1:00-2:00pm', text: '<i class="fas fa-bed"></i> Nap time - Quick automation practice', key: 'automation-practice' },
-            { time: '2:00-10:00pm', text: '<i class="fas fa-baby"></i> Solo dad - both kids', key: 'family' },
-            { time: '10:00-10:30pm', text: '<i class="fas fa-pen-fancy"></i> Evening Journal - Wins + tomorrow', key: 'journal-evening' },
-            { time: '10:30-11:00pm', text: '<i class="fas fa-book"></i> Reading 30min', key: 'reading' },
-            { time: '11:00pm', text: '<i class="fas fa-moon"></i> SLEEP', key: 'sleep' }
+        const truths = [
+            "Your kids are watching everything you do. Don't waste their example on excuses.",
+            "Every morning you sleep in is money you're not making and time you can't get back.",
+            "Nobody's coming to save you. You're the only hero your kids need.",
+            "The gym doesn't care about your feelings. Neither does your bank account.",
+            "Stop talking about it. Your kids need results, not promises.",
+            "Wake up at 4AM or wake up broke. Your call.",
+            "Every rep, every client call, every journal entry - it all counts."
         ];
         
-        const weekendTemplate = [
-            { time: '4:00-4:15am', text: '<i class="fas fa-spa"></i> Meditation', key: 'meditation' },
-            { time: '4:15-4:45am', text: '<i class="fas fa-book-open"></i> Morning Journal', key: 'journal-morning' },
-            { time: '4:45-5:30am', text: '<i class="fas fa-robot"></i> Automation (30min)', key: 'automation' },
-            { time: '5:30-8:00am', text: '<i class="fas fa-car"></i> <i class="fas fa-dumbbell"></i> Gym Session', key: 'gym' },
-            { time: '8:00am-10:00pm', text: '<i class="fas fa-home"></i> FAMILY TIME', key: 'family' },
-            { time: '10:00-10:30pm', text: '<i class="fas fa-pen-fancy"></i> Evening Journal', key: 'journal-evening' },
-            { time: '10:30-11:00pm', text: '<i class="fas fa-book"></i> Reading 30min', key: 'reading' },
-            { time: '11:00pm', text: '<i class="fas fa-moon"></i> SLEEP', key: 'sleep' }
-        ];
+        let appState = {
+            habits: [
+                { id: 1, name: 'Meditation', time: '4:00 AM', completed: false },
+                { id: 2, name: 'Morning Journal', time: '4:15 AM', completed: false },
+                { id: 3, name: 'Automation Learning', time: '4:45 AM', completed: false },
+                { id: 4, name: 'Gym Session', time: '6:00 AM', completed: false },
+                { id: 5, name: 'Client Work', time: '10:00 AM', completed: false },
+                { id: 6, name: 'Evening Journal', time: '10:00 PM', completed: false },
+                { id: 7, name: 'Reading', time: '10:30 PM', completed: false },
+                { id: 8, name: 'Sleep by 11pm', time: '11:00 PM', completed: false }
+            ],
+            clients: [],
+            weightHistory: [],
+            notionConnected: false,
+            notionApiKey: '',
+            notionDatabaseId: '',
+            notionData: { jobApps: 0, outreach: 0 }
+        };
         
-        // Generate February 2026 calendar (starting Jan 30)
-        const monthData = [];
-        const startDate = new Date(2026, 0, 30); // Jan 30, 2026
-        const daysInMonth = 30; // Jan 30-31 + Feb 1-28
-        
-        for (let i = 0; i < daysInMonth; i++) {
-            const currentDate = new Date(startDate);
-            currentDate.setDate(startDate.getDate() + i);
-            const dayOfWeek = currentDate.getDay();
-            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-            
-            monthData.push({
-                date: currentDate,
-                dayName: currentDate.toLocaleDateString('en-US', { weekday: 'long' }),
-                dateStr: currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                tasks: isWeekend ? [...weekendTemplate] : [...dailyTemplate],
-                isWeekend
-            });
+        function loadState() {
+            const saved = localStorage.getItem('4amClubState');
+            if (saved) {
+                try {
+                    appState = { ...appState, ...JSON.parse(saved) };
+                } catch (e) {}
+            }
         }
         
-        // State management
-        let completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '{}');
-        let habitChecks = JSON.parse(localStorage.getItem('habitChecks') || '{}');
-        let currentDayIndex = 0;
+        function saveState() {
+            localStorage.setItem('4amClubState', JSON.stringify(appState));
+        }
         
-        // Initialize
         function init() {
-            updateCurrentDate();
-            renderTodayView();
-            renderWeekView();
-            renderMonthCalendar();
-            updateProgress();
+            loadState();
+            renderQuote();
+            renderStats();
+            renderHabits();
+            renderWeightChart();
+            updateNotionUI();
             setupEventListeners();
-            
-            // Update streak
-            updateStreak();
         }
         
-        function updateCurrentDate() {
-            const today = new Date();
-            document.getElementById('currentDate').textContent = 
-                today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        function renderQuote() {
+            document.getElementById('quoteText').textContent = truths[Math.floor(Math.random() * truths.length)];
         }
         
-        function renderTodayView() {
-            const today = monthData[currentDayIndex];
-            const container = document.getElementById('todaySchedule');
+        function renderStats() {
+            const completed = appState.habits.filter(h => h.completed).length;
+            document.getElementById('streakDays').textContent = completed === 8 ? 1 : 0;
+            document.getElementById('habitsToday').textContent = `${completed}/8`;
+            document.getElementById('clientCount').textContent = appState.clients.length;
             
-            let html = '<div class="task-group"><div class="task-group-title">TODAY\'S SCHEDULE</div>';
+            if (appState.weightHistory.length >= 2) {
+                const latest = appState.weightHistory[appState.weightHistory.length - 1].weight;
+                const previous = appState.weightHistory[appState.weightHistory.length - 2].weight;
+                const diff = (latest - previous).toFixed(1);
+                document.getElementById('weightDiff').textContent = `${diff > 0 ? '+' : ''}${diff} kg`;
+            }
+        }
+        
+        function renderHabits() {
+            const container = document.getElementById('habitsList');
+            container.innerHTML = '';
             
-            today.tasks.forEach((task, idx) => {
-                const taskId = `day${currentDayIndex}-task${idx}`;
-                const isCompleted = completedTasks[taskId] || false;
-                
-                html += `
-                    <div class="task-item ${isCompleted ? 'completed' : ''}" data-task-id="${taskId}">
+            appState.habits.forEach(habit => {
+                const card = document.createElement('div');
+                card.className = `task-card ${habit.completed ? 'completed' : ''}`;
+                card.innerHTML = `
+                    <div class="task-header">
                         <div class="checkbox"></div>
-                        <div class="task-content">
-                            <div class="task-time">${task.time}</div>
-                            <div class="task-text">${task.text}</div>
+                        <div class="task-info">
+                            <div class="task-title">${habit.name}</div>
+                            <div class="task-meta">${habit.time}</div>
                         </div>
                     </div>
                 `;
+                card.onclick = () => {
+                    habit.completed = !habit.completed;
+                    saveState();
+                    renderHabits();
+                    renderStats();
+                };
+                container.appendChild(card);
             });
-            
-            html += '</div>';
-            container.innerHTML = html;
         }
         
-        function renderWeekView() {
-            const container = document.getElementById('weekSchedule');
-            let html = '';
+        let weightChart = null;
+        function renderWeightChart() {
+            const ctx = document.getElementById('weightChart');
+            if (weightChart) weightChart.destroy();
             
-            // Show current week (7 days from today)
-            for (let i = currentDayIndex; i < Math.min(currentDayIndex + 7, monthData.length); i++) {
-                const day = monthData[i];
-                const totalTasks = day.tasks.length;
-                const completedCount = day.tasks.filter((_, idx) => 
-                    completedTasks[`day${i}-task${idx}`]
-                ).length;
-                const percentage = Math.round((completedCount / totalTasks) * 100);
+            if (appState.weightHistory.length === 0) return;
+            
+            const labels = appState.weightHistory.map(e => new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            const data = appState.weightHistory.map(e => e.weight);
+            
+            weightChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Weight (kg)',
+                        data,
+                        borderColor: '#ff6b35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: false, grid: { color: '#2a2a2a' }, ticks: { color: '#888888' } },
+                        x: { grid: { color: '#2a2a2a' }, ticks: { color: '#888888' } }
+                    }
+                }
+            });
+        }
+        
+        function updateNotionUI() {
+            const dot = document.getElementById('notionStatusDot');
+            const text = document.getElementById('notionStatusText');
+            const btnText = document.getElementById('notionBtnText');
+            const testBtn = document.getElementById('testNotionBtn');
+            
+            if (appState.notionConnected) {
+                dot.classList.add('connected');
+                text.textContent = 'Connected';
+                btnText.textContent = 'Disconnect';
+                testBtn.style.display = 'block';
                 
-                html += `
-                    <div class="daily-card">
-                        <div class="card-header">
-                            <div>
-                                <div class="day-name">${day.dayName}</div>
-                                <div class="day-date">${day.dateStr}</div>
-                            </div>
-                            <div class="progress-circle ${percentage === 100 ? 'complete' : ''}">
-                                ${percentage}%
-                            </div>
-                        </div>
-                        <div class="task-group">
-                `;
-                
-                day.tasks.forEach((task, idx) => {
-                    const taskId = `day${i}-task${idx}`;
-                    const isCompleted = completedTasks[taskId] || false;
-                    
-                    html += `
-                        <div class="task-item ${isCompleted ? 'completed' : ''}" data-task-id="${taskId}">
-                            <div class="checkbox"></div>
-                            <div class="task-content">
-                                <div class="task-time">${task.time}</div>
-                                <div class="task-text">${task.text}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                html += '</div></div>';
+                if (appState.notionApiKey) document.getElementById('notionApiKey').value = appState.notionApiKey;
+                if (appState.notionDatabaseId) document.getElementById('notionDatabaseId').value = appState.notionDatabaseId;
+            } else {
+                dot.classList.remove('connected');
+                text.textContent = 'Not Connected';
+                btnText.textContent = 'Connect';
+                testBtn.style.display = 'none';
             }
             
-            container.innerHTML = html;
+            document.getElementById('jobAppsCount').textContent = appState.notionData.jobApps;
+            document.getElementById('outreachCount').textContent = appState.notionData.outreach;
         }
         
-        function renderMonthCalendar() {
-            const container = document.getElementById('monthCalendar');
-            let html = '';
-            
-            monthData.forEach((day, idx) => {
-                const totalTasks = day.tasks.length;
-                const completedCount = day.tasks.filter((_, tidx) => 
-                    completedTasks[`day${idx}-task${tidx}`]
-                ).length;
-                const isCompleted = completedCount === totalTasks;
-                const isToday = idx === currentDayIndex;
-                
-                html += `
-                    <div class="calendar-day ${isToday ? 'today' : ''} ${isCompleted ? 'completed' : ''}" 
-                         data-day="${idx}">
-                        <div class="calendar-day-num">${day.date.getDate()}</div>
-                        <div class="calendar-day-label">${day.date.toLocaleDateString('en-US', { month: 'short' })}</div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('notionAlert');
+            container.innerHTML = `
+                <div class="alert alert-${type}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            setTimeout(() => container.innerHTML = '', 5000);
         }
         
-        function updateProgress() {
-            // Calculate stats
-            let gymSessions = 0;
-            let automationHours = 0;
-            let readingHours = 0;
-            let journalSessions = 0;
+        // BACKEND API URL - UPDATE THIS AFTER DEPLOYING BACKEND
+        const API_URL = 'https://YOUR-BACKEND-URL.vercel.app'; // TODO: Replace with your backend URL
+        
+        async function connectNotion() {
+            const apiKey = document.getElementById('notionApiKey').value.trim();
+            const databaseId = document.getElementById('notionDatabaseId').value.trim();
             
-            monthData.forEach((day, dayIdx) => {
-                day.tasks.forEach((task, taskIdx) => {
-                    const taskId = `day${dayIdx}-task${taskIdx}`;
-                    if (completedTasks[taskId]) {
-                        if (task.key === 'gym') gymSessions++;
-                        if (task.key === 'automation' || task.key === 'automation-practice') automationHours += 0.5;
-                        if (task.key === 'reading') readingHours += 0.5;
-                        if (task.key === 'journal-morning' || task.key === 'journal-evening') journalSessions++;
+            if (!apiKey || !databaseId) {
+                showAlert('Please enter both API key and Database ID', 'danger');
+                return;
+            }
+            
+            // Check if API_URL is still placeholder
+            if (API_URL.includes('YOUR-BACKEND-URL')) {
+                showAlert('Please deploy the backend first and update API_URL in the code', 'danger');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/notion/database/${databaseId}`, {
+                    method: 'GET',
+                    headers: {
+                        'x-notion-api-key': apiKey
                     }
                 });
-            });
-            
-            // Update stats
-            document.getElementById('gymCount').textContent = gymSessions;
-            document.getElementById('clientCount').textContent = '0'; // Manual tracking
-            document.getElementById('automationHours').textContent = automationHours.toFixed(1);
-            document.getElementById('readingHours').textContent = readingHours.toFixed(1);
-            
-            // Update progress bars
-            document.getElementById('gymProgress').textContent = `${gymSessions}/28`;
-            document.getElementById('gymBar').style.width = `${(gymSessions / 28) * 100}%`;
-            
-            document.getElementById('clientProgress').textContent = '0/2';
-            document.getElementById('clientBar').style.width = '0%';
-            
-            document.getElementById('automationProgress').textContent = `${automationHours.toFixed(1)}/14`;
-            document.getElementById('automationBar').style.width = `${(automationHours / 14) * 100}%`;
-            
-            document.getElementById('journalProgress').textContent = `${journalSessions}/56`;
-            document.getElementById('journalBar').style.width = `${(journalSessions / 56) * 100}%`;
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    appState.notionConnected = true;
+                    appState.notionApiKey = apiKey;
+                    appState.notionDatabaseId = databaseId;
+                    saveState();
+                    updateNotionUI();
+                    showAlert('Successfully connected!', 'success');
+                    await fetchNotionData();
+                } else {
+                    showAlert(`Failed: ${data.error || 'Invalid credentials'}`, 'danger');
+                }
+            } catch (error) {
+                showAlert(`Connection error: ${error.message}`, 'danger');
+                console.error('Notion error:', error);
+            }
         }
         
-        function updateStreak() {
-            let streak = 0;
-            for (let i = 0; i <= currentDayIndex; i++) {
-                const day = monthData[i];
-                const totalTasks = day.tasks.length;
-                const completedCount = day.tasks.filter((_, idx) => 
-                    completedTasks[`day${i}-task${idx}`]
-                ).length;
-                
-                if (completedCount === totalTasks) {
-                    streak++;
-                } else if (i < currentDayIndex) {
-                    streak = 0;
-                }
-            }
+        async function fetchNotionData() {
+            if (!appState.notionConnected) return;
             
-            document.getElementById('streakDays').textContent = streak;
+            try {
+                const response = await fetch(`${API_URL}/api/notion/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-notion-api-key': appState.notionApiKey
+                    },
+                    body: JSON.stringify({
+                        databaseId: appState.notionDatabaseId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    appState.notionData.jobApps = data.total_count || data.results.length;
+                    appState.notionData.outreach = Math.floor(appState.notionData.jobApps * 0.7);
+                    saveState();
+                    updateNotionUI();
+                    showAlert('Data synced!', 'success');
+                } else {
+                    showAlert(`Sync failed: ${data.error || 'Unknown error'}`, 'danger');
+                }
+            } catch (error) {
+                showAlert(`Sync error: ${error.message}`, 'danger');
+                console.error('Fetch error:', error);
+            }
         }
         
         function setupEventListeners() {
-            // Tab switching
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     const view = tab.dataset.view;
-                    
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                    
-                    tab.classList.add('active');
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                     document.getElementById(view).classList.add('active');
+                    tab.classList.add('active');
+                    document.querySelector(`.nav-item[data-nav="${view}"]`)?.classList.add('active');
                 });
             });
             
-            // Bottom nav
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const nav = item.dataset.nav;
-                    
-                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                    
-                    item.classList.add('active');
-                    document.querySelector(`.tab[data-view="${nav}"]`).classList.add('active');
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                     document.getElementById(nav).classList.add('active');
+                    document.querySelector(`.tab[data-view="${nav}"]`)?.classList.add('active');
+                    item.classList.add('active');
                 });
             });
             
-            // Task completion
-            document.addEventListener('click', (e) => {
-                const taskItem = e.target.closest('.task-item');
-                if (taskItem) {
-                    const taskId = taskItem.dataset.taskId;
-                    completedTasks[taskId] = !completedTasks[taskId];
-                    localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
-                    
-                    taskItem.classList.toggle('completed');
-                    updateProgress();
-                    updateStreak();
-                    renderMonthCalendar();
-                    renderWeekView();
+            document.getElementById('refreshQuote').addEventListener('click', renderQuote);
+            
+            document.getElementById('addWeightBtn').addEventListener('click', () => {
+                const weight = parseFloat(document.getElementById('weightInput').value);
+                if (weight && weight > 0 && weight < 500) {
+                    appState.weightHistory.push({ date: new Date().toISOString(), weight });
+                    saveState();
+                    renderWeightChart();
+                    renderStats();
+                    document.getElementById('weightInput').value = '';
                 }
             });
             
-            // Habit completion
-            document.querySelectorAll('.habit-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const habitKey = `today-${item.dataset.habit}`;
-                    habitChecks[habitKey] = !habitChecks[habitKey];
-                    localStorage.setItem('habitChecks', JSON.stringify(habitChecks));
-                    
-                    item.classList.toggle('checked');
-                });
-                
-                // Load saved state
-                const habitKey = `today-${item.dataset.habit}`;
-                if (habitChecks[habitKey]) {
-                    item.classList.add('checked');
+            document.getElementById('connectNotionBtn').addEventListener('click', () => {
+                if (appState.notionConnected) {
+                    if (confirm('Disconnect from Notion?')) {
+                        appState.notionConnected = false;
+                        appState.notionApiKey = '';
+                        appState.notionDatabaseId = '';
+                        document.getElementById('notionApiKey').value = '';
+                        document.getElementById('notionDatabaseId').value = '';
+                        saveState();
+                        updateNotionUI();
+                    }
+                } else {
+                    connectNotion();
                 }
             });
             
-            // Calendar day click
-            document.addEventListener('click', (e) => {
-                const calDay = e.target.closest('.calendar-day');
-                if (calDay) {
-                    currentDayIndex = parseInt(calDay.dataset.day);
-                    renderTodayView();
-                    
-                    // Switch to today view
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                    document.querySelector('.tab[data-view="today"]').classList.add('active');
-                    document.getElementById('today').classList.add('active');
-                }
-            });
+            document.getElementById('testNotionBtn').addEventListener('click', fetchNotionData);
         }
         
-        // Initialize on load
         init();
     </script>
 </body>
