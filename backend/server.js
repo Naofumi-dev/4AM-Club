@@ -31,6 +31,8 @@ app.get('/api/notion/database/:databaseId', async (req, res) => {
     return res.status(401).json({ error: 'Missing Notion API key in headers' });
   }
 
+  console.log('Testing Notion connection:', { databaseId: databaseId.substring(0, 8) + '...', hasApiKey: !!apiKey });
+
   try {
     const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
       method: 'GET',
@@ -44,9 +46,15 @@ app.get('/api/notion/database/:databaseId', async (req, res) => {
     const data = await response.json();
 
     if (!response.ok) {
-      return res.status(response.status).json(data);
+      console.error('Notion API error:', response.status, data);
+      return res.status(response.status).json({ 
+        error: data.message || data.error || 'Notion API error',
+        code: data.code,
+        details: data
+      });
     }
 
+    console.log('Notion connection successful');
     res.json(data);
   } catch (error) {
     console.error('Database fetch error:', error);
