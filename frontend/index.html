@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="4AM Club">
     <title>4AM Club - Solo Dad Productivity System</title>
@@ -1374,26 +1375,39 @@
                 return;
             }
             
+            // Remove any dashes or spaces from database ID
+            const cleanDatabaseId = databaseId.replace(/[-\s]/g, '');
+            
             try {
-                const response = await fetch(`${API_URL}/api/notion/database/${databaseId}`, {
+                const response = await fetch(`${API_URL}/api/notion/database/${cleanDatabaseId}`, {
                     method: 'GET',
-                    headers: { 'x-notion-api-key': apiKey }
+                    headers: { 
+                        'x-notion-api-key': apiKey,
+                        'Content-Type': 'application/json'
+                    }
                 });
                 
-                const data = await response.json();
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    data = { error: 'Invalid response from server' };
+                }
                 
                 if (response.ok) {
                     appState.notionConnected = true;
                     appState.notionApiKey = apiKey;
-                    appState.notionDatabaseId = databaseId;
+                    appState.notionDatabaseId = cleanDatabaseId;
                     saveState();
                     updateNotionUI();
                     showAlert('Successfully connected!', 'success');
                     await fetchNotionData();
                 } else {
-                    showAlert(`Failed: ${data.error || 'Invalid credentials'}`, 'danger');
+                    console.error('Connection failed:', data);
+                    showAlert(`Failed: ${data.error || data.message || 'Invalid credentials'}`, 'danger');
                 }
             } catch (error) {
+                console.error('Connection error:', error);
                 showAlert(`Connection error: ${error.message}`, 'danger');
             }
         }
