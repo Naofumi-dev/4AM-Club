@@ -84,28 +84,41 @@ app.post('/api/notion/query', async (req, res) => {
       return res.status(response.status).json(data);
     }
 
-    // Parse and return simplified data
+    // Parse and return simplified data with better property extraction
     const results = data.results.map(page => {
       const properties = {};
       
-      // Extract properties
+      // Extract properties with better handling
       for (const [key, value] of Object.entries(page.properties)) {
-        if (value.title && value.title.length > 0) {
-          properties[key] = value.title[0].plain_text;
-        } else if (value.rich_text && value.rich_text.length > 0) {
-          properties[key] = value.rich_text[0].plain_text;
-        } else if (value.select) {
-          properties[key] = value.select.name;
-        } else if (value.multi_select) {
-          properties[key] = value.multi_select.map(s => s.name);
-        } else if (value.date) {
-          properties[key] = value.date.start;
-        } else if (value.number) {
-          properties[key] = value.number;
-        } else if (value.email) {
-          properties[key] = value.email;
-        } else if (value.url) {
-          properties[key] = value.url;
+        try {
+          if (value.title && value.title.length > 0) {
+            properties[key] = value.title[0].plain_text;
+          } else if (value.rich_text && value.rich_text.length > 0) {
+            properties[key] = value.rich_text[0].plain_text;
+          } else if (value.select) {
+            properties[key] = value.select.name;
+          } else if (value.multi_select && value.multi_select.length > 0) {
+            properties[key] = value.multi_select.map(s => s.name).join(', ');
+          } else if (value.date) {
+            properties[key] = value.date.start;
+          } else if (value.number !== null && value.number !== undefined) {
+            properties[key] = value.number;
+          } else if (value.email) {
+            properties[key] = value.email;
+          } else if (value.url) {
+            properties[key] = value.url;
+          } else if (value.phone_number) {
+            properties[key] = value.phone_number;
+          } else if (value.checkbox !== null && value.checkbox !== undefined) {
+            properties[key] = value.checkbox;
+          } else if (value.people && value.people.length > 0) {
+            properties[key] = value.people.map(p => p.name || p.email).join(', ');
+          } else if (value.status) {
+            properties[key] = value.status.name;
+          }
+        } catch (err) {
+          console.error(`Error extracting property ${key}:`, err);
+          properties[key] = null;
         }
       }
 
@@ -113,6 +126,7 @@ app.post('/api/notion/query', async (req, res) => {
         id: page.id,
         created_time: page.created_time,
         last_edited_time: page.last_edited_time,
+        url: page.url,
         properties
       };
     });
