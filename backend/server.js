@@ -10,6 +10,51 @@ const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
 
+// CORS configuration - MUST be before other middleware
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    // List of allowed origins
+    const allowedOrigins = [
+      'https://4am-club.vercel.app',
+      'https://4am-club-git-main-armagedddonvivas.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:5173',
+      /\.vercel\.app$/ // Allow all Vercel preview deployments
+    ];
+    
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (allowed instanceof RegExp) {
+        return allowed.test(origin);
+      }
+      return allowed === origin;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log('Blocked origin:', origin);
+      callback(null, true); // Still allow but log it
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-notion-api-key'],
+  exposedHeaders: ['Content-Length', 'Content-Type'],
+  maxAge: 86400 // 24 hours
+};
+
+// Apply CORS before any routes
+app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
+
+// Body parser middleware
+app.use(express.json());
+
 // In-memory store for last sync state (in production, use Redis or database)
 const syncState = {
   lastSyncTime: {},
@@ -19,10 +64,6 @@ const syncState = {
 
 // WebSocket connections
 const wsConnections = new Set();
-
-// Middleware
-app.use(cors());
-app.use(express.json());
 
 // WebSocket connection handler
 wss.on('connection', (ws) => {
