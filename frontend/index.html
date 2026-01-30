@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="4AM Club">
-    <title>4AM Club - Solo Dad System</title>
+    <title>4AM Club - Solo Dad Productivity System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
@@ -81,6 +81,34 @@
             color: var(--text-dim);
             letter-spacing: 1.5px;
             font-weight: 600;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--dark-2);
+            border: 1px solid var(--dark-3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-dim);
+        }
+        
+        .icon-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .icon-btn.active {
+            background: var(--primary);
+            color: white;
         }
         
         .tabs {
@@ -193,6 +221,7 @@
             padding: 16px;
             margin-bottom: 12px;
             cursor: pointer;
+            position: relative;
         }
         
         .task-card.completed {
@@ -202,6 +231,7 @@
         .task-header {
             display: flex;
             gap: 12px;
+            align-items: flex-start;
         }
         
         .checkbox {
@@ -212,6 +242,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-top: 2px;
         }
         
         .task-card.completed .checkbox {
@@ -245,6 +276,32 @@
             gap: 12px;
             font-size: 12px;
             color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .task-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .task-btn.edit {
+            background: var(--dark-3);
+            color: var(--text-dim);
+        }
+        
+        .task-btn.delete {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger);
         }
         
         .form-group {
@@ -259,7 +316,7 @@
             font-weight: 600;
         }
         
-        .form-input {
+        .form-input, .form-textarea, .form-select {
             width: 100%;
             background: var(--dark);
             border: 1px solid var(--dark-3);
@@ -269,7 +326,13 @@
             font-size: 15px;
         }
         
-        .form-input:focus {
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
             outline: none;
             border-color: var(--primary);
         }
@@ -291,7 +354,13 @@
             color: white;
         }
         
-        .notion-card {
+        .btn-secondary {
+            background: var(--dark);
+            color: var(--text);
+            border: 1px solid var(--dark-3);
+        }
+        
+        .card {
             background: var(--dark-2);
             border: 1px solid var(--dark-3);
             border-radius: 14px;
@@ -299,45 +368,176 @@
             margin-bottom: 20px;
         }
         
-        .notion-status {
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .section-action {
+            font-size: 13px;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            opacity: 0.2;
+            margin-bottom: 16px;
+        }
+        
+        .client-item {
+            background: var(--dark-2);
+            border: 1px solid var(--dark-3);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 14px;
+        }
+        
+        .client-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 900;
+            color: white;
+        }
+        
+        .client-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .client-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .client-status-text {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+        
+        .client-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .client-badge.new { background: var(--primary); color: white; }
+        .client-badge.contacted { background: var(--secondary); color: white; }
+        .client-badge.hot { background: var(--danger); color: white; }
+        .client-badge.warm { background: var(--warning); color: var(--dark); }
+        .client-badge.cold { background: var(--dark-3); color: var(--text-dim); }
+        
+        .chart-wrapper {
+            height: 280px;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--dark-2);
+            border: 1px solid var(--dark-3);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .modal-close {
+            width: 32px;
+            height: 32px;
             background: var(--dark);
-            border-radius: 10px;
-            margin-bottom: 16px;
+            border: 1px solid var(--dark-3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-dim);
         }
         
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--danger);
-        }
-        
-        .status-dot.connected {
-            background: var(--success);
-        }
-        
-        .alert {
-            padding: 12px 16px;
-            border-radius: 10px;
-            margin-bottom: 16px;
+        .modal-footer {
             display: flex;
             gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
         }
         
-        .alert-success {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--success);
-            color: var(--success);
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.4);
+            cursor: pointer;
+            z-index: 99;
+            color: white;
         }
         
-        .alert-danger {
-            background: rgba(220, 38, 38, 0.1);
-            border: 1px solid var(--danger);
-            color: var(--danger);
+        .fab i {
+            font-size: 24px;
         }
         
         .bottom-nav {
@@ -383,60 +583,82 @@
             font-weight: 600;
         }
         
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
             margin-bottom: 16px;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-        }
-        
-        .empty-icon {
-            font-size: 48px;
-            opacity: 0.2;
-            margin-bottom: 16px;
-        }
-        
-        .client-item {
-            background: var(--dark-2);
-            border: 1px solid var(--dark-3);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 10px;
             display: flex;
-            align-items: center;
             gap: 12px;
         }
         
-        .client-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        
+        .alert-danger {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+        
+        .goal-card {
+            background: var(--dark-2);
+            border: 1px solid var(--dark-3);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .goal-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .progress-bar-container {
+            background: var(--dark);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s;
+        }
+        
+        .action-menu {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 4px;
+        }
+        
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--dark);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            font-weight: 900;
-            color: white;
+            cursor: pointer;
+            font-size: 14px;
         }
         
-        .client-info {
-            flex: 1;
-        }
-        
-        .client-name {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .chart-wrapper {
-            height: 280px;
-        }
+        .action-icon.edit { color: var(--primary); }
+        .action-icon.delete { color: var(--danger); }
     </style>
 </head>
 <body>
@@ -449,20 +671,30 @@
                     <p>SOLO DAD SYSTEM</p>
                 </div>
             </div>
+            <div class="header-actions">
+                <div class="icon-btn" id="exportBtn" title="Export Data">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="icon-btn" id="shareBtn" title="Share">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+            </div>
         </div>
         
         <div class="tabs">
             <div class="tab active" data-view="dashboard">Dashboard</div>
             <div class="tab" data-view="habits">Habits</div>
+            <div class="tab" data-view="tasks">Tasks</div>
             <div class="tab" data-view="clients">Clients</div>
             <div class="tab" data-view="weight">Weight</div>
+            <div class="tab" data-view="goals">Goals</div>
             <div class="tab" data-view="notion">Notion</div>
         </div>
     </div>
     
     <div class="quote-card">
         <div class="quote-text" id="quoteText">Loading...</div>
-        <button class="refresh-quote" id="refreshQuote">New Truth</button>
+        <button class="refresh-quote" id="refreshQuote"><i class="fas fa-sync-alt"></i> New Truth</button>
     </div>
     
     <div class="stats-grid">
@@ -472,92 +704,115 @@
         </div>
         <div class="stat-card">
             <div class="stat-value" id="habitsToday">0/8</div>
-            <div class="stat-label">Today's Habits</div>
+            <div class="stat-label">Habits Done</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="tasksToday">0</div>
+            <div class="stat-label">Tasks Today</div>
         </div>
         <div class="stat-card">
             <div class="stat-value" id="clientCount">0</div>
             <div class="stat-label">Active Leads</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-value" id="weightDiff">--</div>
-            <div class="stat-label">Weight Change</div>
-        </div>
     </div>
     
     <div class="content">
+        <!-- Dashboard View -->
         <div class="view active" id="dashboard">
-            <div class="section-title">Today's Mission</div>
-            <div id="todayTasks">
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="fas fa-tasks"></i></div>
-                    <div style="color: var(--text-dim);">Add tasks to start tracking</div>
-                </div>
+            <div class="section-header">
+                <div class="section-title">Today's Overview</div>
+                <div class="section-action" id="viewAllTasksBtn">View All</div>
             </div>
+            <div id="dashboardTasks"></div>
         </div>
         
+        <!-- Habits View -->
         <div class="view" id="habits">
-            <div class="section-title">Daily Habits</div>
+            <div class="section-header">
+                <div class="section-title">Daily Habits</div>
+                <div class="section-action" id="resetHabitsBtn">Reset All</div>
+            </div>
             <div id="habitsList"></div>
         </div>
         
-        <div class="view" id="clients">
-            <div class="section-title">Client Pipeline</div>
-            <div id="clientsList">
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="fas fa-users"></i></div>
-                    <div style="color: var(--text-dim);">No clients yet</div>
-                </div>
+        <!-- Tasks View -->
+        <div class="view" id="tasks">
+            <div class="section-header">
+                <div class="section-title">All Tasks</div>
+                <div class="section-action" id="addTaskBtn">+ Add Task</div>
             </div>
+            <div id="tasksList"></div>
         </div>
         
+        <!-- Clients View -->
+        <div class="view" id="clients">
+            <div class="section-header">
+                <div class="section-title">Client Pipeline</div>
+                <div class="section-action" id="addClientBtn">+ Add Client</div>
+            </div>
+            <div id="clientsList"></div>
+        </div>
+        
+        <!-- Weight View -->
         <div class="view" id="weight">
-            <div class="section-title">Weight Tracker</div>
-            <div class="notion-card">
+            <div class="card">
+                <div class="section-title">Track Weight</div>
                 <div class="form-group">
                     <label class="form-label">Weight (kg)</label>
                     <input type="number" class="form-input" id="weightInput" placeholder="75.5" step="0.1">
                 </div>
-                <button class="btn btn-primary" id="addWeightBtn" style="width: 100%;">Add Entry</button>
+                <button class="btn btn-primary" id="addWeightBtn" style="width: 100%;"><i class="fas fa-plus"></i> Add Entry</button>
             </div>
-            <div class="notion-card">
+            <div class="card">
                 <div class="chart-wrapper">
                     <canvas id="weightChart"></canvas>
                 </div>
             </div>
+            <div class="section-header">
+                <div class="section-title">History</div>
+                <div class="section-action" id="clearWeightBtn">Clear All</div>
+            </div>
+            <div id="weightHistory"></div>
         </div>
         
+        <!-- Goals View -->
+        <div class="view" id="goals">
+            <div class="section-header">
+                <div class="section-title">Monthly Goals</div>
+                <div class="section-action" id="addGoalBtn">+ Add Goal</div>
+            </div>
+            <div id="goalsList"></div>
+        </div>
+        
+        <!-- Notion View -->
         <div class="view" id="notion">
             <div id="notionAlert"></div>
-            
-            <div class="notion-card">
+            <div class="card">
                 <div class="section-title">Notion Integration</div>
-                
-                <div class="notion-status">
-                    <div class="status-dot" id="notionStatusDot"></div>
+                <div style="padding: 14px; background: var(--dark); border-radius: 10px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--danger);" id="notionStatusDot"></div>
                     <div style="flex: 1;">
                         <div style="font-weight: 600; margin-bottom: 4px;" id="notionStatusText">Not Connected</div>
                         <div style="font-size: 12px; color: var(--text-dim);">Sync job apps & outreach</div>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <label class="form-label">Integration Token</label>
                     <input type="password" class="form-input" id="notionApiKey" placeholder="secret_...">
                 </div>
-                
                 <div class="form-group">
                     <label class="form-label">Database ID</label>
                     <input type="text" class="form-input" id="notionDatabaseId" placeholder="Database ID">
                 </div>
-                
                 <button class="btn btn-primary" id="connectNotionBtn" style="width: 100%; margin-bottom: 8px;">
                     <i class="fab fa-notion"></i> <span id="notionBtnText">Connect</span>
                 </button>
-                
-                <button class="btn" id="testNotionBtn" style="width: 100%; background: var(--dark); color: var(--text); display: none;">
-                    Test Connection
+                <button class="btn btn-secondary" id="syncNotionBtn" style="width: 100%; margin-bottom: 16px; display: none;">
+                    <i class="fas fa-sync-alt"></i> Sync Now
                 </button>
-                
+                <div style="font-size: 12px; color: var(--text-dim); text-align: center; margin-bottom: 16px;" id="lastSyncTime">
+                    Never synced
+                </div>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px;">
                     <div style="background: var(--dark); padding: 16px; border-radius: 10px;">
                         <div style="font-size: 28px; font-weight: 900; color: var(--primary);" id="jobAppsCount">0</div>
@@ -569,19 +824,10 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="notion-card">
-                <div class="section-title" style="margin-bottom: 12px;">Setup Guide</div>
-                <ol style="padding-left: 20px; color: var(--text-dim); font-size: 14px; line-height: 1.8;">
-                    <li style="margin-bottom: 8px;">Visit <a href="https://www.notion.so/my-integrations" target="_blank" style="color: var(--primary);">notion.so/my-integrations</a></li>
-                    <li style="margin-bottom: 8px;">Create integration, copy token</li>
-                    <li style="margin-bottom: 8px;">Open database → "..." → Add connections</li>
-                    <li style="margin-bottom: 8px;">Copy database ID from URL</li>
-                    <li>Paste above and connect</li>
-                </ol>
-            </div>
         </div>
     </div>
+    
+    <div class="fab" id="fab"><i class="fas fa-plus"></i></div>
     
     <div class="bottom-nav">
         <div class="nav-item active" data-nav="dashboard">
@@ -592,17 +838,131 @@
             <i class="fas fa-fire"></i>
             <div class="nav-label">Habits</div>
         </div>
+        <div class="nav-item" data-nav="tasks">
+            <i class="fas fa-tasks"></i>
+            <div class="nav-label">Tasks</div>
+        </div>
         <div class="nav-item" data-nav="clients">
             <i class="fas fa-briefcase"></i>
             <div class="nav-label">Clients</div>
         </div>
-        <div class="nav-item" data-nav="weight">
-            <i class="fas fa-chart-line"></i>
-            <div class="nav-label">Progress</div>
+    </div>
+    
+    <!-- Task Modal -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="taskModalTitle">Add Task</div>
+                <div class="modal-close" onclick="closeModal('taskModal')"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Title</label>
+                <input type="text" class="form-input" id="taskTitle" placeholder="What needs to be done?">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description (optional)</label>
+                <textarea class="form-textarea" id="taskDescription" placeholder="Add more details..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Time</label>
+                <input type="time" class="form-input" id="taskTime">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-select" id="taskCategory">
+                    <option value="work">Work</option>
+                    <option value="family">Family</option>
+                    <option value="health">Health</option>
+                    <option value="learning">Learning</option>
+                    <option value="personal">Personal</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Priority</label>
+                <select class="form-select" id="taskPriority">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
+                <button class="btn btn-primary" id="saveTaskBtn"><i class="fas fa-save"></i> Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Client Modal -->
+    <div class="modal" id="clientModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="clientModalTitle">Add Client</div>
+                <div class="modal-close" onclick="closeModal('clientModal')"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Client Name</label>
+                <input type="text" class="form-input" id="clientName" placeholder="Company or person name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-input" id="clientEmail" placeholder="email@example.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone (optional)</label>
+                <input type="tel" class="form-input" id="clientPhone" placeholder="+1234567890">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Notes</label>
+                <textarea class="form-textarea" id="clientNotes" placeholder="Important details..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="clientStatus">
+                    <option value="new">New Lead</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="hot">Hot Lead</option>
+                    <option value="warm">Warm</option>
+                    <option value="cold">Cold</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('clientModal')">Cancel</button>
+                <button class="btn btn-primary" id="saveClientBtn"><i class="fas fa-save"></i> Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Goal Modal -->
+    <div class="modal" id="goalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Add Goal</div>
+                <div class="modal-close" onclick="closeModal('goalModal')"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Goal Title</label>
+                <input type="text" class="form-input" id="goalTitle" placeholder="What do you want to achieve?">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Target</label>
+                <input type="number" class="form-input" id="goalTarget" placeholder="e.g., 30 for 30 days">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Unit</label>
+                <input type="text" class="form-input" id="goalUnit" placeholder="e.g., days, clients, kg">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('goalModal')">Cancel</button>
+                <button class="btn btn-primary" id="saveGoalBtn"><i class="fas fa-save"></i> Save</button>
+            </div>
         </div>
     </div>
     
     <script>
+        // Backend API URL
+        const API_URL = 'https://4am-club-backend.vercel.app';
+        
+        // Brutal truths
         const truths = [
             "Your kids are watching everything you do. Don't waste their example on excuses.",
             "Every morning you sleep in is money you're not making and time you can't get back.",
@@ -610,9 +970,13 @@
             "The gym doesn't care about your feelings. Neither does your bank account.",
             "Stop talking about it. Your kids need results, not promises.",
             "Wake up at 4AM or wake up broke. Your call.",
-            "Every rep, every client call, every journal entry - it all counts."
+            "Every rep, every client call, every journal entry - it all counts.",
+            "Comfortable men raise weak kids. Be the uncomfortable example.",
+            "Your bank account is a reflection of your discipline, not your luck.",
+            "The grind doesn't stop because you're tired. Neither should you."
         ];
         
+        // App State
         let appState = {
             habits: [
                 { id: 1, name: 'Meditation', time: '4:00 AM', completed: false },
@@ -624,25 +988,37 @@
                 { id: 7, name: 'Reading', time: '10:30 PM', completed: false },
                 { id: 8, name: 'Sleep by 11pm', time: '11:00 PM', completed: false }
             ],
+            tasks: [],
             clients: [],
+            goals: [],
             weightHistory: [],
             notionConnected: false,
             notionApiKey: '',
             notionDatabaseId: '',
-            notionData: { jobApps: 0, outreach: 0 }
+            notionData: { jobApps: 0, outreach: 0 },
+            lastSyncTime: null,
+            editingTaskId: null,
+            editingClientId: null
         };
         
         function loadState() {
             const saved = localStorage.getItem('4amClubState');
             if (saved) {
                 try {
-                    appState = { ...appState, ...JSON.parse(saved) };
-                } catch (e) {}
+                    const parsed = JSON.parse(saved);
+                    appState = { ...appState, ...parsed };
+                } catch (e) {
+                    console.error('Error loading state:', e);
+                }
             }
         }
         
         function saveState() {
-            localStorage.setItem('4amClubState', JSON.stringify(appState));
+            try {
+                localStorage.setItem('4amClubState', JSON.stringify(appState));
+            } catch (e) {
+                console.error('Error saving state:', e);
+            }
         }
         
         function init() {
@@ -650,9 +1026,15 @@
             renderQuote();
             renderStats();
             renderHabits();
+            renderTasks();
+            renderDashboardTasks();
+            renderClients();
+            renderGoals();
+            renderWeightHistory();
             renderWeightChart();
             updateNotionUI();
             setupEventListeners();
+            startAutoSync(); // Start auto-sync
         }
         
         function renderQuote() {
@@ -663,14 +1045,10 @@
             const completed = appState.habits.filter(h => h.completed).length;
             document.getElementById('streakDays').textContent = completed === 8 ? 1 : 0;
             document.getElementById('habitsToday').textContent = `${completed}/8`;
-            document.getElementById('clientCount').textContent = appState.clients.length;
             
-            if (appState.weightHistory.length >= 2) {
-                const latest = appState.weightHistory[appState.weightHistory.length - 1].weight;
-                const previous = appState.weightHistory[appState.weightHistory.length - 2].weight;
-                const diff = (latest - previous).toFixed(1);
-                document.getElementById('weightDiff').textContent = `${diff > 0 ? '+' : ''}${diff} kg`;
-            }
+            const todayTasks = appState.tasks.filter(t => !t.completed).length;
+            document.getElementById('tasksToday').textContent = todayTasks;
+            document.getElementById('clientCount').textContent = appState.clients.length;
         }
         
         function renderHabits() {
@@ -699,6 +1077,198 @@
             });
         }
         
+        function renderTasks() {
+            const container = document.getElementById('tasksList');
+            
+            if (appState.tasks.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fas fa-tasks"></i></div><div style="color: var(--text-dim);">No tasks yet. Add your first one!</div></div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            appState.tasks.forEach(task => {
+                const card = document.createElement('div');
+                card.className = `task-card ${task.completed ? 'completed' : ''}`;
+                card.innerHTML = `
+                    <div class="action-menu">
+                        <div class="action-icon edit" onclick="event.stopPropagation(); editTask(${task.id})">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="action-icon delete" onclick="event.stopPropagation(); deleteTask(${task.id})">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </div>
+                    <div class="task-header">
+                        <div class="checkbox"></div>
+                        <div class="task-info">
+                            <div class="task-title">${task.title}</div>
+                            ${task.description ? `<div style="font-size: 13px; color: var(--text-dim); margin-bottom: 6px;">${task.description}</div>` : ''}
+                            <div class="task-meta">
+                                <div><i class="far fa-clock"></i> ${task.time}</div>
+                                <div><i class="fas fa-tag"></i> ${task.category}</div>
+                                <div><i class="fas fa-flag"></i> ${task.priority}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                card.onclick = (e) => {
+                    if (!e.target.closest('.action-menu')) {
+                        task.completed = !task.completed;
+                        saveState();
+                        renderTasks();
+                        renderDashboardTasks();
+                        renderStats();
+                    }
+                };
+                container.appendChild(card);
+            });
+        }
+        
+        function renderDashboardTasks() {
+            const container = document.getElementById('dashboardTasks');
+            const pendingTasks = appState.tasks.filter(t => !t.completed).slice(0, 5);
+            
+            if (pendingTasks.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fas fa-check-circle"></i></div><div style="color: var(--text-dim);">All caught up! Add new tasks.</div></div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            pendingTasks.forEach(task => {
+                const card = document.createElement('div');
+                card.className = 'task-card';
+                card.innerHTML = `
+                    <div class="task-header">
+                        <div class="checkbox"></div>
+                        <div class="task-info">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-meta">
+                                <div><i class="far fa-clock"></i> ${task.time}</div>
+                                <div><i class="fas fa-tag"></i> ${task.category}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                card.onclick = () => {
+                    task.completed = true;
+                    saveState();
+                    renderTasks();
+                    renderDashboardTasks();
+                    renderStats();
+                };
+                container.appendChild(card);
+            });
+        }
+        
+        function renderClients() {
+            const container = document.getElementById('clientsList');
+            
+            if (appState.clients.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fas fa-users"></i></div><div style="color: var(--text-dim);">No clients yet. Add manually or sync from Notion!</div></div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Sort: Notion-synced items first, then manual
+            const sortedClients = [...appState.clients].sort((a, b) => {
+                if (a.syncedFromNotion && !b.syncedFromNotion) return -1;
+                if (!a.syncedFromNotion && b.syncedFromNotion) return 1;
+                return 0;
+            });
+            
+            sortedClients.forEach(client => {
+                const item = document.createElement('div');
+                item.className = 'client-item';
+                const initial = client.name.charAt(0).toUpperCase();
+                
+                item.innerHTML = `
+                    <div class="client-avatar">${initial}</div>
+                    <div class="client-info">
+                        <div class="client-name">
+                            ${client.name}
+                            ${client.syncedFromNotion ? '<i class="fab fa-notion" style="font-size: 12px; margin-left: 6px; color: var(--text-dim);" title="Synced from Notion"></i>' : ''}
+                        </div>
+                        <div class="client-status-text">${client.email}</div>
+                        ${client.notes ? `<div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">${client.notes}</div>` : ''}
+                    </div>
+                    <div class="client-badge ${client.status}">${client.status}</div>
+                    ${!client.syncedFromNotion ? `
+                        <div class="action-icon edit" onclick="editClient(${client.id})">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="action-icon delete" onclick="deleteClient(${client.id})">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    ` : `
+                        <div class="action-icon" style="color: var(--text-dim); cursor: default;" title="Synced from Notion">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                    `}
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        function renderGoals() {
+            const container = document.getElementById('goalsList');
+            
+            if (appState.goals.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fas fa-bullseye"></i></div><div style="color: var(--text-dim);">Set your first goal!</div></div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            appState.goals.forEach(goal => {
+                const progress = (goal.current / goal.target) * 100;
+                const card = document.createElement('div');
+                card.className = 'goal-card';
+                card.innerHTML = `
+                    <div class="action-menu">
+                        <div class="action-icon edit" onclick="updateGoalProgress(${goal.id})">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="action-icon delete" onclick="deleteGoal(${goal.id})">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </div>
+                    <div class="goal-header">
+                        <div class="goal-title">${goal.title}</div>
+                        <div>${goal.current}/${goal.target} ${goal.unit}</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${Math.min(progress, 100)}%"></div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        function renderWeightHistory() {
+            const container = document.getElementById('weightHistory');
+            
+            if (appState.weightHistory.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fas fa-weight"></i></div><div style="color: var(--text-dim);">Start tracking your weight!</div></div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            [...appState.weightHistory].reverse().slice(0, 10).forEach(entry => {
+                const item = document.createElement('div');
+                item.className = 'client-item';
+                const date = new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                
+                item.innerHTML = `
+                    <div class="client-avatar"><i class="fas fa-weight"></i></div>
+                    <div class="client-info">
+                        <div class="client-name">${entry.weight} kg</div>
+                        <div class="client-status-text">${date}</div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
         let weightChart = null;
         function renderWeightChart() {
             const ctx = document.getElementById('weightChart');
@@ -720,7 +1290,9 @@
                         backgroundColor: 'rgba(255, 107, 53, 0.1)',
                         tension: 0.4,
                         fill: true,
-                        borderWidth: 3
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ff6b35',
+                        pointRadius: 5
                     }]
                 },
                 options: {
@@ -739,21 +1311,43 @@
             const dot = document.getElementById('notionStatusDot');
             const text = document.getElementById('notionStatusText');
             const btnText = document.getElementById('notionBtnText');
-            const testBtn = document.getElementById('testNotionBtn');
+            const syncBtn = document.getElementById('syncNotionBtn');
             
             if (appState.notionConnected) {
-                dot.classList.add('connected');
+                dot.style.background = 'var(--success)';
                 text.textContent = 'Connected';
                 btnText.textContent = 'Disconnect';
-                testBtn.style.display = 'block';
+                syncBtn.style.display = 'block';
                 
                 if (appState.notionApiKey) document.getElementById('notionApiKey').value = appState.notionApiKey;
                 if (appState.notionDatabaseId) document.getElementById('notionDatabaseId').value = appState.notionDatabaseId;
+                
+                // Show last sync time
+                if (appState.lastSyncTime) {
+                    const lastSync = new Date(appState.lastSyncTime);
+                    const now = new Date();
+                    const diffMinutes = Math.floor((now - lastSync) / 60000);
+                    
+                    let timeText = '';
+                    if (diffMinutes < 1) {
+                        timeText = 'Just now';
+                    } else if (diffMinutes < 60) {
+                        timeText = `${diffMinutes} min ago`;
+                    } else {
+                        const diffHours = Math.floor(diffMinutes / 60);
+                        timeText = `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+                    }
+                    
+                    document.getElementById('lastSyncTime').textContent = `Last synced: ${timeText}`;
+                } else {
+                    document.getElementById('lastSyncTime').textContent = 'Never synced - Click "Sync Now"';
+                }
             } else {
-                dot.classList.remove('connected');
+                dot.style.background = 'var(--danger)';
                 text.textContent = 'Not Connected';
                 btnText.textContent = 'Connect';
-                testBtn.style.display = 'none';
+                syncBtn.style.display = 'none';
+                document.getElementById('lastSyncTime').textContent = 'Connect to start syncing';
             }
             
             document.getElementById('jobAppsCount').textContent = appState.notionData.jobApps;
@@ -771,9 +1365,6 @@
             setTimeout(() => container.innerHTML = '', 5000);
         }
         
-        // BACKEND API URL - UPDATE THIS AFTER DEPLOYING BACKEND
-        const API_URL = 'https://4am-club-backend.vercel.app/'; // TODO: Replace with your backend URL
-        
         async function connectNotion() {
             const apiKey = document.getElementById('notionApiKey').value.trim();
             const databaseId = document.getElementById('notionDatabaseId').value.trim();
@@ -783,18 +1374,10 @@
                 return;
             }
             
-            // Check if API_URL is still placeholder
-            if (API_URL.includes('YOUR-BACKEND-URL')) {
-                showAlert('Please deploy the backend first and update API_URL in the code', 'danger');
-                return;
-            }
-            
             try {
                 const response = await fetch(`${API_URL}/api/notion/database/${databaseId}`, {
                     method: 'GET',
-                    headers: {
-                        'x-notion-api-key': apiKey
-                    }
+                    headers: { 'x-notion-api-key': apiKey }
                 });
                 
                 const data = await response.json();
@@ -812,7 +1395,6 @@
                 }
             } catch (error) {
                 showAlert(`Connection error: ${error.message}`, 'danger');
-                console.error('Notion error:', error);
             }
         }
         
@@ -826,19 +1408,25 @@
                         'Content-Type': 'application/json',
                         'x-notion-api-key': appState.notionApiKey
                     },
-                    body: JSON.stringify({
-                        databaseId: appState.notionDatabaseId
-                    })
+                    body: JSON.stringify({ databaseId: appState.notionDatabaseId })
                 });
                 
                 const data = await response.json();
                 
                 if (response.ok) {
+                    // Update stats
                     appState.notionData.jobApps = data.total_count || data.results.length;
-                    appState.notionData.outreach = Math.floor(appState.notionData.jobApps * 0.7);
+                    appState.notionData.outreach = data.total_count || data.results.length;
+                    appState.lastSyncTime = new Date().toISOString();
+                    
+                    // Sync to Clients tab
+                    syncNotionToClients(data.results);
+                    
                     saveState();
                     updateNotionUI();
-                    showAlert('Data synced!', 'success');
+                    renderClients();
+                    renderStats();
+                    showAlert(`Synced ${data.results.length} items successfully!`, 'success');
                 } else {
                     showAlert(`Sync failed: ${data.error || 'Unknown error'}`, 'danger');
                 }
@@ -848,7 +1436,208 @@
             }
         }
         
+        function syncNotionToClients(notionResults) {
+            // Map Notion data to clients
+            notionResults.forEach(item => {
+                const props = item.properties;
+                
+                // Try to extract name from various possible property names
+                const name = props.Name || props.Company || props.Title || props['Company Name'] || 
+                             props.name || props.company || 'Unknown';
+                
+                // Try to extract email/contact
+                const email = props.Email || props['Job URL'] || props.URL || props.url || 
+                             props['Contact'] || props.LinkedIn || 'No contact';
+                
+                // Extract position/role
+                const position = props.Position || props.Role || props.Stage || props.status || '';
+                
+                // Map Notion status to our app status
+                const notionStatus = (props.Stage || props.Status || props.stage || props.status || '').toLowerCase();
+                let appStatus = 'new';
+                
+                if (notionStatus.includes('applied') || notionStatus.includes('sent')) {
+                    appStatus = 'contacted';
+                } else if (notionStatus.includes('interview') || notionStatus.includes('follow')) {
+                    appStatus = 'hot';
+                } else if (notionStatus.includes('waiting') || notionStatus.includes('progress')) {
+                    appStatus = 'warm';
+                } else if (notionStatus.includes('rejected') || notionStatus.includes('complete') || 
+                          notionStatus.includes('not pursuing') || notionStatus.includes('signed')) {
+                    appStatus = 'cold';
+                } else if (notionStatus.includes('offered')) {
+                    appStatus = 'hot';
+                }
+                
+                // Check if client already exists (by name or email)
+                const existingClient = appState.clients.find(c => 
+                    c.name === name || 
+                    c.email === email || 
+                    (c.notionId && c.notionId === item.id)
+                );
+                
+                if (existingClient) {
+                    // Update existing client
+                    existingClient.status = appStatus;
+                    existingClient.notes = position ? `Position: ${position}` : existingClient.notes;
+                    existingClient.notionId = item.id;
+                    existingClient.notionUrl = item.url;
+                    existingClient.lastSynced = new Date().toISOString();
+                } else {
+                    // Add new client from Notion
+                    appState.clients.push({
+                        id: Date.now() + Math.random(),
+                        name: name,
+                        email: email,
+                        phone: '',
+                        notes: position ? `Position: ${position}` : 'Synced from Notion',
+                        status: appStatus,
+                        notionId: item.id,
+                        notionUrl: item.url,
+                        syncedFromNotion: true,
+                        lastSynced: new Date().toISOString()
+                    });
+                }
+            });
+        }
+        
+        // Auto-sync every 5 minutes if connected
+        function startAutoSync() {
+            if (appState.notionConnected) {
+                setInterval(() => {
+                    if (appState.notionConnected) {
+                        console.log('Auto-syncing Notion data...');
+                        fetchNotionData();
+                    }
+                }, 5 * 60 * 1000); // 5 minutes
+            }
+        }
+        
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            if (modalId === 'taskModal') {
+                appState.editingTaskId = null;
+                clearTaskForm();
+            }
+            if (modalId === 'clientModal') {
+                appState.editingClientId = null;
+                clearClientForm();
+            }
+        }
+        
+        function clearTaskForm() {
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDescription').value = '';
+            document.getElementById('taskTime').value = '';
+            document.getElementById('taskCategory').value = 'work';
+            document.getElementById('taskPriority').value = 'medium';
+            document.getElementById('taskModalTitle').textContent = 'Add Task';
+        }
+        
+        function clearClientForm() {
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientEmail').value = '';
+            document.getElementById('clientPhone').value = '';
+            document.getElementById('clientNotes').value = '';
+            document.getElementById('clientStatus').value = 'new';
+            document.getElementById('clientModalTitle').textContent = 'Add Client';
+        }
+        
+        function editTask(id) {
+            const task = appState.tasks.find(t => t.id === id);
+            if (!task) return;
+            
+            appState.editingTaskId = id;
+            document.getElementById('taskModalTitle').textContent = 'Edit Task';
+            document.getElementById('taskTitle').value = task.title;
+            document.getElementById('taskDescription').value = task.description || '';
+            document.getElementById('taskTime').value = task.time;
+            document.getElementById('taskCategory').value = task.category;
+            document.getElementById('taskPriority').value = task.priority;
+            openModal('taskModal');
+        }
+        
+        function deleteTask(id) {
+            if (confirm('Delete this task?')) {
+                appState.tasks = appState.tasks.filter(t => t.id !== id);
+                saveState();
+                renderTasks();
+                renderDashboardTasks();
+                renderStats();
+            }
+        }
+        
+        function editClient(id) {
+            const client = appState.clients.find(c => c.id === id);
+            if (!client) return;
+            
+            appState.editingClientId = id;
+            document.getElementById('clientModalTitle').textContent = 'Edit Client';
+            document.getElementById('clientName').value = client.name;
+            document.getElementById('clientEmail').value = client.email;
+            document.getElementById('clientPhone').value = client.phone || '';
+            document.getElementById('clientNotes').value = client.notes || '';
+            document.getElementById('clientStatus').value = client.status;
+            openModal('clientModal');
+        }
+        
+        function deleteClient(id) {
+            if (confirm('Delete this client?')) {
+                appState.clients = appState.clients.filter(c => c.id !== id);
+                saveState();
+                renderClients();
+                renderStats();
+            }
+        }
+        
+        function updateGoalProgress(id) {
+            const goal = appState.goals.find(g => g.id === id);
+            if (!goal) return;
+            
+            const amount = prompt(`Add progress to "${goal.title}" (current: ${goal.current}):`, '1');
+            if (amount && !isNaN(amount)) {
+                goal.current = Math.min(goal.current + parseInt(amount), goal.target);
+                saveState();
+                renderGoals();
+            }
+        }
+        
+        function deleteGoal(id) {
+            if (confirm('Delete this goal?')) {
+                appState.goals = appState.goals.filter(g => g.id !== id);
+                saveState();
+                renderGoals();
+            }
+        }
+        
+        function exportData() {
+            const dataStr = JSON.stringify(appState, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `4am-club-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+        
+        function shareApp() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '4AM Club',
+                    text: 'Join me in the 4AM Club - productivity system for solo dads!',
+                    url: window.location.href
+                });
+            } else {
+                alert('Share link: ' + window.location.href);
+            }
+        }
+        
         function setupEventListeners() {
+            // Navigation
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     const view = tab.dataset.view;
@@ -873,25 +1662,175 @@
                 });
             });
             
+            // Quote
             document.getElementById('refreshQuote').addEventListener('click', renderQuote);
             
+            // Tasks
+            document.getElementById('addTaskBtn').addEventListener('click', () => {
+                clearTaskForm();
+                openModal('taskModal');
+            });
+            
+            document.getElementById('fab').addEventListener('click', () => {
+                clearTaskForm();
+                openModal('taskModal');
+            });
+            
+            document.getElementById('viewAllTasksBtn').addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelector('.tab[data-view="tasks"]').classList.add('active');
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.getElementById('tasks').classList.add('active');
+            });
+            
+            document.getElementById('saveTaskBtn').addEventListener('click', () => {
+                const title = document.getElementById('taskTitle').value.trim();
+                const description = document.getElementById('taskDescription').value.trim();
+                const time = document.getElementById('taskTime').value;
+                const category = document.getElementById('taskCategory').value;
+                const priority = document.getElementById('taskPriority').value;
+                
+                if (!title || !time) {
+                    alert('Please fill in title and time');
+                    return;
+                }
+                
+                if (appState.editingTaskId) {
+                    const task = appState.tasks.find(t => t.id === appState.editingTaskId);
+                    if (task) {
+                        task.title = title;
+                        task.description = description;
+                        task.time = time;
+                        task.category = category;
+                        task.priority = priority;
+                    }
+                } else {
+                    appState.tasks.push({
+                        id: Date.now(),
+                        title,
+                        description,
+                        time,
+                        category,
+                        priority,
+                        completed: false
+                    });
+                }
+                
+                saveState();
+                renderTasks();
+                renderDashboardTasks();
+                renderStats();
+                closeModal('taskModal');
+            });
+            
+            // Clients
+            document.getElementById('addClientBtn').addEventListener('click', () => {
+                clearClientForm();
+                openModal('clientModal');
+            });
+            
+            document.getElementById('saveClientBtn').addEventListener('click', () => {
+                const name = document.getElementById('clientName').value.trim();
+                const email = document.getElementById('clientEmail').value.trim();
+                const phone = document.getElementById('clientPhone').value.trim();
+                const notes = document.getElementById('clientNotes').value.trim();
+                const status = document.getElementById('clientStatus').value;
+                
+                if (!name || !email) {
+                    alert('Please fill in name and email');
+                    return;
+                }
+                
+                if (appState.editingClientId) {
+                    const client = appState.clients.find(c => c.id === appState.editingClientId);
+                    if (client) {
+                        client.name = name;
+                        client.email = email;
+                        client.phone = phone;
+                        client.notes = notes;
+                        client.status = status;
+                    }
+                } else {
+                    appState.clients.push({
+                        id: Date.now(),
+                        name,
+                        email,
+                        phone,
+                        notes,
+                        status
+                    });
+                }
+                
+                saveState();
+                renderClients();
+                renderStats();
+                closeModal('clientModal');
+            });
+            
+            // Goals
+            document.getElementById('addGoalBtn').addEventListener('click', () => openModal('goalModal'));
+            
+            document.getElementById('saveGoalBtn').addEventListener('click', () => {
+                const title = document.getElementById('goalTitle').value.trim();
+                const target = parseInt(document.getElementById('goalTarget').value);
+                const unit = document.getElementById('goalUnit').value.trim();
+                
+                if (!title || !target || !unit) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                appState.goals.push({
+                    id: Date.now(),
+                    title,
+                    target,
+                    unit,
+                    current: 0
+                });
+                
+                saveState();
+                renderGoals();
+                closeModal('goalModal');
+                
+                document.getElementById('goalTitle').value = '';
+                document.getElementById('goalTarget').value = '';
+                document.getElementById('goalUnit').value = '';
+            });
+            
+            // Weight
             document.getElementById('addWeightBtn').addEventListener('click', () => {
                 const weight = parseFloat(document.getElementById('weightInput').value);
+                
                 if (weight && weight > 0 && weight < 500) {
-                    appState.weightHistory.push({ date: new Date().toISOString(), weight });
+                    appState.weightHistory.push({
+                        date: new Date().toISOString(),
+                        weight: weight
+                    });
                     saveState();
+                    renderWeightHistory();
                     renderWeightChart();
                     renderStats();
                     document.getElementById('weightInput').value = '';
                 }
             });
             
+            document.getElementById('clearWeightBtn').addEventListener('click', () => {
+                if (confirm('Delete all weight history?')) {
+                    appState.weightHistory = [];
+                    saveState();
+                    renderWeightHistory();
+                    renderWeightChart();
+                }
+            });
+            
+            // Notion
             document.getElementById('connectNotionBtn').addEventListener('click', () => {
                 if (appState.notionConnected) {
                     if (confirm('Disconnect from Notion?')) {
                         appState.notionConnected = false;
                         appState.notionApiKey = '';
                         appState.notionDatabaseId = '';
+                        appState.lastSyncTime = null;
                         document.getElementById('notionApiKey').value = '';
                         document.getElementById('notionDatabaseId').value = '';
                         saveState();
@@ -902,9 +1841,35 @@
                 }
             });
             
-            document.getElementById('testNotionBtn').addEventListener('click', fetchNotionData);
+            document.getElementById('syncNotionBtn').addEventListener('click', () => {
+                fetchNotionData();
+            });
+            
+            // Habits
+            document.getElementById('resetHabitsBtn').addEventListener('click', () => {
+                if (confirm('Reset all habits?')) {
+                    appState.habits.forEach(h => h.completed = false);
+                    saveState();
+                    renderHabits();
+                    renderStats();
+                }
+            });
+            
+            // Export & Share
+            document.getElementById('exportBtn').addEventListener('click', exportData);
+            document.getElementById('shareBtn').addEventListener('click', shareApp);
+            
+            // Close modals on background click
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeModal(modal.id);
+                    }
+                });
+            });
         }
         
+        // Initialize
         init();
     </script>
 </body>
