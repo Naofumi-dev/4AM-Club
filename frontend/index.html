@@ -1443,20 +1443,43 @@
         
         async function connectNotion() {
             const apiKey = document.getElementById('notionApiKey').value.trim();
-            const databaseId = document.getElementById('notionDatabaseId').value.trim();
+            let databaseId = document.getElementById('notionDatabaseId').value.trim();
             
             if (!apiKey || !databaseId) {
                 showAlert('Please enter both API key and Database ID', 'danger');
                 return;
             }
             
-            // Remove any dashes or spaces from database ID
+            // Clean up database ID - remove any URLs, dashes, or spaces
+            // Extract just the ID if user pasted a full URL
+            if (databaseId.includes('notion.com')) {
+                // Extract ID from URL like: notion.so/workspace/DATABASE_ID?v=view
+                const matches = databaseId.match(/([a-f0-9]{32}|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
+                if (matches) {
+                    databaseId = matches[0];
+                } else {
+                    showAlert('Could not extract database ID from URL. Please paste just the ID.', 'danger');
+                    return;
+                }
+            }
+            
+            // Remove dashes and spaces
             const cleanDatabaseId = databaseId.replace(/[-\s]/g, '');
+            
+            // Validate database ID format (should be 32 hex characters)
+            if (!/^[a-f0-9]{32}$/i.test(cleanDatabaseId)) {
+                showAlert('Invalid database ID format. Should be 32 characters (letters and numbers only).', 'danger');
+                return;
+            }
             
             showAlert('Connecting to Notion...', 'success');
             
             try {
-                const response = await fetch(`${API_URL}/api/notion/database/${cleanDatabaseId}`, {
+                // Use clean database ID in URL - DO NOT include full Notion API URL
+                const url = `${API_URL}/api/notion/database/${cleanDatabaseId}`;
+                console.log('Connecting to:', url);
+                
+                const response = await fetch(url, {
                     method: 'GET',
                     headers: { 
                         'x-notion-api-key': apiKey,
@@ -1468,8 +1491,11 @@
                 try {
                     data = await response.json();
                 } catch (e) {
+                    console.error('Failed to parse response:', e);
                     data = { error: 'Invalid response from server' };
                 }
+                
+                console.log('Response:', response.status, data);
                 
                 if (response.ok && data.success) {
                     appState.notionConnected = true;
@@ -1477,7 +1503,7 @@
                     appState.notionDatabaseId = cleanDatabaseId;
                     saveState();
                     updateNotionUI();
-                    showAlert(`Connected to "${data.database.title}"!`, 'success');
+                    showAlert(`✅ Connected to "${data.database.title}"!`, 'success');
                     
                     // Start WebSocket connection for real-time updates
                     connectWebSocket();
@@ -1490,18 +1516,28 @@
                     
                     // Provide helpful error messages
                     if (errorMsg.includes('page') && errorMsg.includes('database')) {
-                        showAlert('Error: This is a page ID, not a database ID. Please use the database ID instead.', 'danger');
+                        showAlert('❌ Error: This is a PAGE ID, not a DATABASE ID. Please find your database ID using the guide.', 'danger');
                     } else if (errorMsg.includes('object_not_found')) {
-                        showAlert('Error: Database not found. Make sure you shared the database with your integration.', 'danger');
-                    } else if (errorMsg.includes('unauthorized')) {
-                        showAlert('Error: Invalid API key or insufficient permissions.', 'danger');
+                        showAlert('❌ Error: Database not found. Make sure you:\n1. Shared the database with your integration\n2. Used the correct database ID', 'danger');
+                    } else if (errorMsg.includes('unauthorized') || errorMsg.includes('Unauthorized')) {
+                        showAlert('❌ Error: Invalid API key or insufficient permissions.', 'danger');
+                    } else if (errorMsg.includes('validation_error')) {
+                        showAlert('❌ Error: Invalid database ID format.', 'danger');
                     } else {
-                        showAlert(`Failed: ${errorMsg}`, 'danger');
+                        showAlert(`❌ Failed: ${errorMsg}`, 'danger');
                     }
                 }
             } catch (error) {
                 console.error('Connection error:', error);
-                showAlert(`Connection error: ${error.message}`, 'danger');
+                
+                // More specific error messages
+                if (error.message.includes('Failed to fetch')) {
+                    showAlert('❌ Network error: Cannot reach backend server. Check if backend is deployed.', 'danger');
+                } else if (error.message.includes('CORS')) {
+                    showAlert('❌ CORS error: Backend is blocking requests. Contact support.', 'danger');
+                } else {
+                    showAlert(`❌ Connection error: ${error.message}`, 'danger');
+                }
             }
         }
         
